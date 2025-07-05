@@ -1,0 +1,59 @@
+import requests
+
+def get_weather(city):
+    API_KEY = "YOUR_API_KEY_HERE"
+    base_url = "https://api.openweathermap.org/data/2.5/weather"
+
+    params = {
+        'q': city,
+        'appid': API_KEY,
+        'units': 'metric'
+    }
+
+    try:
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if response.status_code == 200:
+            weather = {
+                "temperature": data["main"]["temp"],
+                "humidity": data["main"]["humidity"],
+                "description": data["weather"][0]["description"],
+                "city": data["name"]
+            }
+            return weather
+        else:
+            return None
+
+    except Exception as e:
+        print("⚠️ Error connecting to weather service.")
+        return None
+
+def main():
+    print("☀️ Welcome to the AI Weather Assistant!")
+    print("📍 I can fetch current weather info for any city.")
+    
+    while True:
+        city = input("\n🗺️ Enter city name (or 'exit' to quit): ").strip()
+
+        if city.lower() == 'exit':
+            print("👋 Thanks for using the Weather Assistant. Stay safe!")
+            break
+
+        if not city:
+            print("❗ Please enter a valid city name.")
+            continue
+
+        print("🔄 Fetching weather data... Please wait.")
+        weather = get_weather(city)
+
+        if weather:
+            print(f"\n📡 Weather in {weather['city']}:")
+            print(f"🌡️ Temperature: {weather['temperature']}°C")
+            print(f"💧 Humidity: {weather['humidity']}%")
+            print(f"☁️ Condition: {weather['description'].title()}")
+        else:
+            print("❌ Could not retrieve weather data. Please check the city name or try again later.")
+
+if __name__ == "__main__":
+    main()
